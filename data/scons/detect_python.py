@@ -42,6 +42,7 @@ def find_boost_python(version):
     libnames = [
         'boost_python-mt-py%s' % version,
         'boost_python-py%s' % version,
+		'boost_python%s' % version,
         'boost_python' + ('3' if version.startswith('3') else '')
     ]
     basepaths = [
@@ -57,7 +58,7 @@ def find_boost_python(version):
     return None
 
 def detect_python():
-    pyver = ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6']
+    pyver = ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8']
     pyenv = {}
 
     for version in pyver:
