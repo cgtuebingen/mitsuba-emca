@@ -61,8 +61,8 @@ public:
     }
 
     QString textFromValue(double value) const {
-        char tmp[32];
-        snprintf(tmp, sizeof(tmp), "%f", value);
+        char tmp[512];
+        snprintf(tmp, sizeof(tmp)-2, "%f", value);
         morphNumericString(tmp);
         return QString::fromLatin1(tmp);
     }
