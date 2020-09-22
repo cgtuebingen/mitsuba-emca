@@ -22,11 +22,6 @@
 
 #include <mitsuba/hw/renderer.h>
 
-struct GLEWContextStruct;
-
-/// Get the per-thread context for GLEW-MX
-extern MTS_EXPORT_HW GLEWContextStruct *glewGetContext();
-
 MTS_NAMESPACE_BEGIN
 
 /**
