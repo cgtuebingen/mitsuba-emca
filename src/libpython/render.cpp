@@ -41,6 +41,12 @@ static bp::tuple bsdf_sample(const BSDF *bsdf, BSDFSamplingRecord &bRec, const P
     return bp::make_tuple(result, pdf);
 }
 
+static bp::tuple phasefunction_sample(const PhaseFunction *phase, PhaseFunctionSamplingRecord &pRec, Sampler* sampler) {
+	Float pdf;
+	Float result = phase->sample(pRec, pdf, sampler);
+	return bp::make_tuple(result, pdf);
+}
+
 static bp::list shapekdtree_getShapes(const ShapeKDTree *kdtree) {
     const std::vector<const Shape *> &shapes = kdtree->getShapes();
     bp::list list;
@@ -309,6 +315,16 @@ bp::tuple Sensor_getSamplePosition(Sensor *sensor, const PositionSamplingRecord 
     Point2 samplePos;
     bool result = sensor->getSamplePosition(pRec, dRec, samplePos);
     return bp::make_tuple(result, samplePos);
+}
+
+Spectrum AbstractEmitter_sampleDirect(AbstractEmitter *emitter, DirectSamplingRecord &dRec, Point2 &sample) {
+    Spectrum result = emitter->sampleDirect(dRec, sample);
+    return result;
+}
+
+Float AbstractEmitter_pdfDirect(AbstractEmitter *emitter, DirectSamplingRecord &dRec) {
+    Float pdf = emitter->pdfDirect(dRec);
+    return pdf;
 }
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getBitmap_overloads, getBitmap, 0, 1)
@@ -597,6 +613,8 @@ void export_render() {
         .def("getShape", abstractemitter_getShape, BP_RETURN_VALUE)
         .def("getMedium", abstractemitter_getMedium, BP_RETURN_VALUE)
         .def("createShape", &AbstractEmitter::createShape, BP_RETURN_VALUE)
+        .def("sampleDirect", &AbstractEmitter_sampleDirect, BP_RETURN_VALUE)
+        .def("pdfDirect", &AbstractEmitter_pdfDirect, BP_RETURN_VALUE)
         .def("getAABB", &AbstractEmitter::getAABB, BP_RETURN_VALUE);
 
     BP_SETSCOPE(AbstractEmitter_class);
@@ -825,6 +843,34 @@ void export_render() {
         .def("workCanceledEvent", &RenderListener::workCanceledEvent)
         .def("refreshEvent", &RenderListener::refreshEvent)
         .def("finishJobEvent", &RenderListener::finishJobEvent);
+
+	BP_STRUCT(MediumSamplingRecord, (bp::init<>()))
+		.def_readwrite("t", &MediumSamplingRecord::t)
+		.def_readwrite("p", &MediumSamplingRecord::p)
+		.def_readwrite("time", &MediumSamplingRecord::time)
+		.def_readwrite("pdfFailure", &MediumSamplingRecord::pdfFailure)
+		.def_readwrite("pdfSuccess", &MediumSamplingRecord::pdfSuccess)
+		.def_readwrite("transmittance", &MediumSamplingRecord::transmittance)
+		.def_readwrite("sigmaS", &MediumSamplingRecord::sigmaS)
+		.def_readwrite("sigmaA", &MediumSamplingRecord::sigmaA)
+		.def("__repr__", &MediumSamplingRecord::toString);
+
+	BP_STRUCT(PhaseFunctionSamplingRecord, (bp::init<const MediumSamplingRecord &, const Vector&, const Vector&, ETransportMode>()))
+		.def(bp::init<const MediumSamplingRecord &, const Vector&, ETransportMode>())
+		.def(bp::init<const MediumSamplingRecord &, const Vector&, const Vector&, ETransportMode>())
+		.def_readwrite("wi", &PhaseFunctionSamplingRecord::wi)
+		.def_readwrite("wo", &PhaseFunctionSamplingRecord::wo)
+		.def_readwrite("mode", &PhaseFunctionSamplingRecord::mode)
+		.def("reverse", &PhaseFunctionSamplingRecord::reverse)
+		.def("__repr__", &PhaseFunctionSamplingRecord::toString);
+
+	BP_CLASS(PhaseFunction, ConfigurableObject, bp::no_init)
+		.def("getType", &PhaseFunction::getType)
+		.def("getMeanCosine", &PhaseFunction::getMeanCosine)
+		.def("sample", &phasefunction_sample, BP_RETURN_VALUE)
+		.def("eval", &PhaseFunction::eval, BP_RETURN_VALUE)
+		.def("pdf", &PhaseFunction::pdf)
+		.def("__repr__", &PhaseFunction::toString);
 
     bp::detail::current_scope = oldScope;
 }

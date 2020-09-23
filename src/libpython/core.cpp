@@ -22,6 +22,7 @@
 #include <mitsuba/core/vmf.h>
 #include <mitsuba/core/shvector.h>
 #include <mitsuba/core/sshstream.h>
+#include <mitsuba/core/warp.h>
 #include <mitsuba/render/scenehandler.h>
 #include <mitsuba/render/scene.h>
 #include <boost/algorithm/string.hpp>
@@ -2547,6 +2548,30 @@ void export_core() {
         .staticmethod("forMeanCosine")
         .staticmethod("forPeakValue")
         .staticmethod("convolve");
+
+    /* warp.h */
+    bp::def("squareToUniformSphere", warp::squareToUniformSphere, BP_RETURN_VALUE);
+    bp::def("squareToUniformSpherePdf", warp::squareToUniformSpherePdf, BP_RETURN_VALUE);
+    bp::def("squareToUniformHemisphere", warp::squareToUniformHemisphere, BP_RETURN_VALUE);
+    bp::def("squareToUniformHemispherePdf", warp::squareToUniformHemispherePdf, BP_RETURN_VALUE);
+    bp::def("squareToCosineHemisphere", warp::squareToCosineHemisphere, BP_RETURN_VALUE);
+    bp::def("squareToCosineHemispherePdf", warp::squareToCosineHemispherePdf, BP_RETURN_VALUE);
+    bp::def("squareToUniformCone", warp::squareToUniformCone, BP_RETURN_VALUE);
+    bp::def("squareToUniformConePdf", warp::squareToUniformConePdf, BP_RETURN_VALUE);
+    bp::def("squareToUniformDisk", warp::squareToUniformDisk, BP_RETURN_VALUE);
+    bp::def("squareToUniformDiskPdf", warp::squareToUniformDiskPdf, BP_RETURN_VALUE);
+    bp::def("squareToUniformDiskConcentric", warp::squareToUniformDiskConcentric, BP_RETURN_VALUE);
+    bp::def("squareToUniformDiskConcentricPdf", warp::squareToUniformDiskConcentricPdf, BP_RETURN_VALUE);
+    bp::def("uniformDiskToSquareConcentric", warp::uniformDiskToSquareConcentric, BP_RETURN_VALUE);
+    bp::def("squareToUniformTriangle", warp::squareToUniformTriangle, BP_RETURN_VALUE);
+    bp::def("squareToStdNormal", warp::squareToStdNormal, BP_RETURN_VALUE);
+    bp::def("squareToStdNormalPdf", warp::squareToStdNormalPdf, BP_RETURN_VALUE);
+    bp::def("squareToTent", warp::squareToTent, BP_RETURN_VALUE);
+    bp::def("intervalToNonuniformTent", warp::intervalToNonuniformTent, BP_RETURN_VALUE);
+
+    /* util.h */
+    bp::def("sphericalDirection", sphericalDirection, BP_RETURN_VALUE);
+    bp::def("toSphericalCoordinates", toSphericalCoordinates, BP_RETURN_VALUE);
 
     bp::detail::current_scope = oldScope;
 }
