@@ -380,6 +380,19 @@ public:
             ? m_nested->getRoughness(its, component) : (Float) 0;
     }
 
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
+    }
+
+    virtual int numNestedBSDFs() const
+    {
+        return 1;
+    }
+
+    virtual ref<BSDF> getNestedBSDF(const int idx) const{
+        return m_nested;
+    }
+
     std::string toString() const {
         std::ostringstream oss;
         oss << "SmoothCoating[" << endl

@@ -174,6 +174,9 @@ public:
         return m_diffuseReflectance->eval(its);
     }
 
+    Spectrum getSpecularReflectance(const Intersection &its) const {
+        return m_specularReflectance->eval(its);
+    }
 
     Spectrum eval(const BSDFSamplingRecord &bRec, EMeasure measure) const {
         if (Frame::cosTheta(bRec.wi) <= 0 ||

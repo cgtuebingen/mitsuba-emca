@@ -237,6 +237,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMRoughDielectric;
+
         unsigned int extraFlags = 0;
         if (m_alphaU != m_alphaV)
             extraFlags |= EAnisotropic;
@@ -640,6 +642,14 @@ public:
     Float getRoughness(const Intersection &its, int component) const {
         return 0.5f * (m_alphaU->eval(its).average()
             + m_alphaV->eval(its).average());
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
+    }
+
+    ref<Texture> getRoughnessTexture() const {
+        return m_alphaU;
     }
 
     std::string toString() const {

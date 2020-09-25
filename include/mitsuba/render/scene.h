@@ -1131,6 +1131,15 @@ public:
     /// Return a string representation
     std::string toString() const;
 
+
+    void initBSDFandPhaseFunctions();
+
+    inline ref_vector<PhaseFunction> &getPhaseFunctions() { return m_phases; }
+    inline const ref_vector<PhaseFunction> &getPhaseFunctions() const { return m_phases; }
+
+    inline ref_vector<BSDF> &getBSDFs() { return m_bsdfs; }
+    inline const ref_vector<BSDF> &getBSDFs() const { return m_bsdfs; }
+
     //! @}
     // =============================================================
 
@@ -1165,6 +1174,10 @@ private:
     uint32_t m_blockSize;
     bool m_degenerateSensor;
     bool m_degenerateEmitters;
+
+    ref_vector<BSDF> m_bsdfs;
+    ref_vector<PhaseFunction> m_phases;
+
 };
 
 MTS_NAMESPACE_END

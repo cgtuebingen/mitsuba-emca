@@ -185,6 +185,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMConductor;
+
         /* Verify the input parameters and fix them if necessary */
         m_specularReflectance = ensureEnergyConservation(
             m_specularReflectance, "specularReflectance", 1.0f);
@@ -284,8 +286,17 @@ public:
             fresnelConductorExact(Frame::cosTheta(bRec.wi), m_eta, m_k);
     }
 
+    Spectrum getSpecularReflectance(const Intersection &its) const {
+        return fresnelConductorExact(its.wi.z, m_eta, m_k)
+                * m_specularReflectance->eval(its);
+    }
+
     Float getRoughness(const Intersection &its, int component) const {
         return 0.0f;
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
     }
 
     std::string toString() const {

@@ -91,6 +91,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMSmoothDiffuse;
+        
         /* Verify the input parameter and fix them if necessary */
         m_reflectance = ensureEnergyConservation(m_reflectance, "reflectance", 1.0f);
 
@@ -166,6 +168,10 @@ public:
 
     Float getRoughness(const Intersection &its, int component) const {
         return std::numeric_limits<Float>::infinity();
+    }
+
+    ref<Texture> getDiffuseReflectanceTexture() const {
+        return m_reflectance;
     }
 
     std::string toString() const {

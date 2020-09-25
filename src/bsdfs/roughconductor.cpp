@@ -226,6 +226,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMRoughConductor;
+        
         unsigned int extraFlags = 0;
         if (m_alphaU != m_alphaV)
             extraFlags |= EAnisotropic;
@@ -252,6 +254,11 @@ public:
     /// Helper function: reflect \c wi with respect to a given surface normal
     inline Vector reflect(const Vector &wi, const Normal &m) const {
         return 2 * dot(wi, m) * Vector(m) - wi;
+    }
+
+    Spectrum getSpecularReflectance(const Intersection &its) const {
+        return fresnelConductorExact(its.wi.z, m_eta, m_k)
+                * m_specularReflectance->eval(its);
     }
 
     Spectrum eval(const BSDFSamplingRecord &bRec, EMeasure measure) const {
@@ -434,6 +441,14 @@ public:
     Float getRoughness(const Intersection &its, int component) const {
         return 0.5f * (m_alphaU->eval(its).average()
             + m_alphaV->eval(its).average());
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
+    }
+
+    ref<Texture> getRoughnessTexture() const {
+        return m_alphaU;
     }
 
     std::string toString() const {

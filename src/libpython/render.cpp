@@ -170,6 +170,22 @@ static bp::list scene_getShapes(Scene *scene) {
     return list;
 }
 
+static bp::list scene_getBSDFs(Scene *scene) {
+    bp::list list;
+    ref_vector<BSDF> &bsdfs = scene->getBSDFs();
+    for (size_t i=0; i<bsdfs.size(); ++i)
+        list.append(cast(bsdfs[i].get()));
+    return list;
+}
+
+static bp::list scene_getPhaseFunctions(Scene *scene) {
+    bp::list list;
+    ref_vector<PhaseFunction> &phases = scene->getPhaseFunctions();
+    for (size_t i=0; i<phases.size(); ++i)
+        list.append(cast(phases[i].get()));
+    return list;
+}
+
 static bp::list scene_getEmitters(Scene *scene) {
     bp::list list;
     ref_vector<Emitter> &emitters = scene->getEmitters();
@@ -417,6 +433,8 @@ void export_render() {
         .def("getShapes", &scene_getShapes)
         .def("getMeshes", &scene_getMeshes)
         .def("getEmitters", &scene_getEmitters)
+        .def("getBSDFs", &scene_getBSDFs)
+		.def("getPhaseFunctions", &scene_getPhaseFunctions)
         .def("getMedia", &scene_getMedia)
         .def("getKDTree", scene_getKDTree, BP_RETURN_VALUE);
 
@@ -613,9 +631,9 @@ void export_render() {
         .def("getShape", abstractemitter_getShape, BP_RETURN_VALUE)
         .def("getMedium", abstractemitter_getMedium, BP_RETURN_VALUE)
         .def("createShape", &AbstractEmitter::createShape, BP_RETURN_VALUE)
+		.def("getAABB", &AbstractEmitter::getAABB, BP_RETURN_VALUE)
         .def("sampleDirect", &AbstractEmitter_sampleDirect, BP_RETURN_VALUE)
-        .def("pdfDirect", &AbstractEmitter_pdfDirect, BP_RETURN_VALUE)
-        .def("getAABB", &AbstractEmitter::getAABB, BP_RETURN_VALUE);
+        .def("pdfDirect", &AbstractEmitter_pdfDirect, BP_RETURN_VALUE);
 
     BP_SETSCOPE(AbstractEmitter_class);
     bp::enum_<AbstractEmitter::EEmitterType>("EEmitterType")
@@ -749,10 +767,17 @@ void export_render() {
         .def("hasComponent", &BSDF::hasComponent)
         .def("usesRayDifferentials", &BSDF::usesRayDifferentials)
         .def("getDiffuseReflectance", &BSDF::getDiffuseReflectance, BP_RETURN_VALUE)
+        .def("getSpecularReflectance", &BSDF::getSpecularReflectance, BP_RETURN_VALUE)
         .def("getEta", &BSDF::getEta)
         .def("sample", &bsdf_sample, BP_RETURN_VALUE)
         .def("eval", &BSDF::eval, BP_RETURN_VALUE)
         .def("pdf", &BSDF::pdf)
+        .def("getRoughness", &BSDF::getRoughness)
+        .def("numNestedBSDFs", &BSDF::numNestedBSDFs)
+        .def("getNestedBSDF", &BSDF::getNestedBSDF, BP_RETURN_VALUE)
+        .def("getDiffuseReflectanceTexture", &BSDF::getDiffuseReflectanceTexture, BP_RETURN_VALUE)
+        .def("getSpecularReflectanceTexture", &BSDF::getSpecularReflectanceTexture, BP_RETURN_VALUE)
+        .def("getRoughnessTexture", &BSDF::getRoughnessTexture, BP_RETURN_VALUE)
         .staticmethod("getMeasure");
 
     BP_SETSCOPE(BSDF_class);

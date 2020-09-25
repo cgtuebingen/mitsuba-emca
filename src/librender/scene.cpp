@@ -313,6 +313,47 @@ void Scene::configure() {
     m_sampler = m_sensor->getSampler();
 
     m_integrator->configureSampler(this, m_sampler);
+
+    initBSDFandPhaseFunctions();
+}
+
+void Scene::initBSDFandPhaseFunctions() {
+
+    for(size_t i=0; i< m_objects.size(); i++){
+        if(dynamic_cast<PhaseFunction *>(m_objects[i].get())){
+            PhaseFunction *phase = dynamic_cast<PhaseFunction *>(m_objects[i].get());
+            phase->setUID(m_phases.size());
+            m_phases.push_back(phase);
+        }
+
+        if(dynamic_cast<BSDF *>(m_objects[i].get())){
+            BSDF *bsdf = dynamic_cast<BSDF *>(m_objects[i].get());
+            bsdf->setUID(m_bsdfs.size());
+            m_bsdfs.push_back(bsdf);
+        }
+    }
+
+    for(size_t i=0; i< m_shapes.size(); i++){
+        ref<BSDF> bsdf = m_shapes[i]->getBSDF();
+        if(bsdf->getUID()== -1){
+            bsdf->setUID(m_bsdfs.size());
+            if (bsdf->getID() == "unnamed"){
+                bsdf->setID( "unnamed_bsdf_" + std::to_string(m_bsdfs.size()));
+            }
+            m_bsdfs.push_back(bsdf);
+        }
+    }
+
+    for(size_t i=0; i< m_media.size(); i++){
+        ref<PhaseFunction> phase = m_media[i]->getPhaseFunctionRef();
+        if(phase->getUID()== -1){
+            phase->setUID(m_phases.size());
+            if (phase->getID() == "unnamed"){
+                phase->setID( "unnamed_phase_" + std::to_string(m_phases.size()));
+            }
+            m_phases.push_back(phase);
+        }
+    }
 }
 
 void Scene::invalidate() {

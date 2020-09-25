@@ -284,6 +284,23 @@ public:
         EAll          = EDiffuse | EGlossy | EDelta | EDelta1D
     };
 
+    enum EBSDFModel{
+        EMSmoothDiffuse,
+        EMPhong,
+        EMTorrance,
+        EMConductor,
+        EMRoughConductor,
+        EMDielectric,
+        EMRoughDielectric,
+        EMPlastic,
+        EMRoughPlastic,
+        EMOther
+    };
+
+    inline EBSDFModel getModel() const {
+        return m_model;
+    }
+
     /// Return the number of components of this BSDF
     inline int getComponentCount() const {
         return (int) m_components.size();
@@ -498,6 +515,35 @@ public:
     //! @}
     // =============================================================
 
+    inline int getUID() const {
+        return m_uid;
+    }
+
+    inline void setUID(const int &uid) {
+        this->m_uid = uid;
+    }
+
+    virtual int numNestedBSDFs() const
+    {
+        return 0;
+    }
+
+    virtual ref<BSDF> getNestedBSDF(const int idx) const{
+        return nullptr;
+    }
+
+    virtual ref<Texture> getDiffuseReflectanceTexture() const {
+        return nullptr;
+    }
+
+    virtual ref<Texture> getSpecularReflectanceTexture() const {
+        return nullptr;
+    }
+
+    virtual ref<Texture> getRoughnessTexture() const {
+        return nullptr;
+    }
+
     MTS_DECLARE_CLASS()
 protected:
     /// Create a new BSDF instance
@@ -540,6 +586,8 @@ protected:
     unsigned int m_combinedType;
     bool m_usesRayDifferentials;
     bool m_ensureEnergyConservation;
+    int m_uid {-1};
+    EBSDFModel m_model {EBSDFModel::EMOther};
 };
 
 MTS_NAMESPACE_END

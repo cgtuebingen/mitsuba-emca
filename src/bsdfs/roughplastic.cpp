@@ -253,6 +253,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMRoughPlastic;
+        
         bool constAlpha = m_alpha->isConstant();
 
         m_components.clear();
@@ -315,7 +317,7 @@ public:
     }
 
     Spectrum getSpecularReflectance(const Intersection &its) const {
-        return m_specularReflectance->eval(its);
+        return m_specularReflectance->eval(its)*fresnelDielectricExt(1.0f, m_eta);
     }
 
     /// Helper function: reflect \c wi with respect to a given surface normal
@@ -527,6 +529,18 @@ public:
             return m_alpha->eval(its).average();
         else
             return std::numeric_limits<Float>::infinity();
+    }
+
+    ref<Texture> getDiffuseReflectanceTexture() const {
+        return m_diffuseReflectance;
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
+    }
+
+    ref<Texture> getRoughnessTexture() const {
+        return m_alpha;
     }
 
     std::string toString() const {

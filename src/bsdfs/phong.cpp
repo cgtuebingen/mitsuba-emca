@@ -78,6 +78,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMPhong;
+
         m_components.clear();
         m_components.push_back(EGlossyReflection | EFrontSide |
             ((!m_specularReflectance->isConstant()
@@ -276,6 +278,18 @@ public:
             return std::numeric_limits<Float>::infinity();
     }
 
+    ref<Texture> getDiffuseReflectanceTexture() const {
+        return m_diffuseReflectance;
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
+    }
+/*
+    ref<Texture> getRoughnessTexture() const {
+        return m_alpha;
+    }
+*/
     std::string toString() const {
         std::ostringstream oss;
         oss << "Phong[" << endl

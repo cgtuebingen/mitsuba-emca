@@ -184,6 +184,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMPlastic;
+        
         /* Verify the input parameters and fix them if necessary */
         m_specularReflectance = ensureEnergyConservation(
             m_specularReflectance, "specularReflectance", 1.0f);
@@ -446,6 +448,14 @@ public:
             return 0.0f;
         else
             return std::numeric_limits<Float>::infinity();
+    }
+
+    ref<Texture> getDiffuseReflectanceTexture() const {
+        return m_diffuseReflectance;
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
     }
 
     std::string toString() const {

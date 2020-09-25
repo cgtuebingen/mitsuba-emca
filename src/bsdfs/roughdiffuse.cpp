@@ -275,6 +275,14 @@ public:
         return std::numeric_limits<Float>::infinity();
     }
 
+    ref<Texture> getDiffuseReflectanceTexture() const {
+        return m_reflectance;
+    }
+
+    ref<Texture> getRoughnessTexture() const {
+        return m_alpha;
+    }
+
     std::string toString() const {
         std::ostringstream oss;
         oss << "RoughDiffuse[" << endl

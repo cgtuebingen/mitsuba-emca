@@ -220,6 +220,13 @@ public:
      */
     virtual Float getMeanCosine() const;
 
+    inline int getUID() const {
+        return m_uid;
+    }
+
+    inline void setUID(const int &uid) {
+        this->m_uid = uid;
+    }
     /// Return a string representation
     virtual std::string toString() const = 0;
 
@@ -237,6 +244,8 @@ protected:
     virtual ~PhaseFunction() { }
 protected:
     unsigned int m_type;
+
+    int m_uid {-1};
 };
 
 MTS_NAMESPACE_END

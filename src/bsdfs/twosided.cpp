@@ -87,6 +87,7 @@ public:
         if (!m_nestedBRDF[1])
             m_nestedBRDF[1] = m_nestedBRDF[0];
 
+        m_model = m_nestedBRDF[0]->getModel();
 
         m_usesRayDifferentials = m_nestedBRDF[0]->usesRayDifferentials()
             || m_nestedBRDF[1]->usesRayDifferentials();
@@ -202,6 +203,13 @@ public:
             return m_nestedBRDF[1]->getDiffuseReflectance(its);
     }
 
+    Spectrum getSpecularReflectance(const Intersection &its) const {
+        if (its.wi.z > 0)
+            return m_nestedBRDF[0]->getSpecularReflectance(its);
+        else
+            return m_nestedBRDF[1]->getSpecularReflectance(its);
+    }
+
     Float getRoughness(const Intersection &its, int component) const {
         if (component < m_nestedBRDF[0]->getComponentCount()) {
             return m_nestedBRDF[0]->getRoughness(its, component);
@@ -213,6 +221,15 @@ public:
 
     Float getEta() const {
         return 1.0f;
+    }
+
+    virtual int numNestedBSDFs() const
+    {
+        return 2;
+    }
+
+    virtual ref<BSDF> getNestedBSDF(const int idx) const{
+        return m_nestedBRDF[idx];
     }
 
     std::string toString() const {

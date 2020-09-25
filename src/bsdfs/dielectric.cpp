@@ -182,6 +182,8 @@ public:
     }
 
     void configure() {
+        m_model = EBSDFModel::EMDielectric;
+
         /* Verify the input parameters and fix them if necessary */
         m_specularReflectance = ensureEnergyConservation(
             m_specularReflectance, "specularReflectance", 1.0f);
@@ -392,6 +394,10 @@ public:
 
     Float getRoughness(const Intersection &its, int component) const {
         return 0.0f;
+    }
+
+    ref<Texture> getSpecularReflectanceTexture() const {
+        return m_specularReflectance;
     }
 
     std::string toString() const {
