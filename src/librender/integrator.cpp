@@ -147,6 +147,8 @@ void SamplingIntegrator::renderBlock(const Scene *scene,
     bool needsApertureSample = sensor->needsApertureSample();
     bool needsTimeSample = sensor->needsTimeSample();
 
+    Vector2i filmSize = sensor->getFilm()->getSize();
+
     RadianceQueryRecord rRec(scene, sampler);
     Point2 apertureSample(0.5f);
     Float timeSample = 0.5f;
@@ -164,10 +166,13 @@ void SamplingIntegrator::renderBlock(const Scene *scene,
         if (stop)
             break;
 
+        int pixIdx = offset[1]*filmSize[0] + offset[0];
+
         sampler->generate(offset);
 
         for (size_t j = 0; j<sampler->getSampleCount(); j++) {
             rRec.newQuery(queryType, sensor->getMedium());
+            rRec.pixelId = pixIdx;
             Point2 samplePos(Point2(offset) + Vector2(rRec.nextSample2D()));
 
             if (needsApertureSample)

@@ -199,19 +199,19 @@ public:
     /// Construct an invalid radiance query record
     inline RadianceQueryRecord()
      : type(0), scene(NULL), sampler(NULL), medium(NULL),
-       depth(0), alpha(0), dist(-1), extra(0) {
+       depth(0), alpha(0), dist(-1), extra(0), pixelId(-1) {
     }
 
     /// Construct a radiance query record for the given scene and sampler
     inline RadianceQueryRecord(const Scene *scene, Sampler *sampler)
      : type(0), scene(scene), sampler(sampler), medium(NULL),
-       depth(0), alpha(0), dist(-1), extra(0) {
+       depth(0), alpha(0), dist(-1), extra(0), pixelId(-1) {
     }
 
     /// Copy constructor
     inline RadianceQueryRecord(const RadianceQueryRecord &rRec)
      : type(rRec.type), scene(rRec.scene), sampler(rRec.sampler), medium(rRec.medium),
-       depth(rRec.depth), alpha(rRec.alpha), dist(rRec.dist), extra(rRec.extra) {
+       depth(rRec.depth), alpha(rRec.alpha), dist(rRec.dist), extra(rRec.extra), pixelId(rRec.pixelId) {
     }
 
     /// Begin a new query of the given type
@@ -221,6 +221,7 @@ public:
         depth = 1;
         extra = 0;
         alpha = 1;
+        pixelId = -1;
     }
 
     /// Initialize the query record for a recursive query
@@ -231,6 +232,7 @@ public:
         depth = parent.depth+1;
         medium = parent.medium;
         extra = parent.extra;
+        pixelId = parent.pixelId;
     }
 
     /// Initialize the query record for a recursive query
@@ -241,6 +243,7 @@ public:
         depth = parent.depth+1;
         medium = parent.medium;
         extra = parent.extra;
+        pixelId = parent.pixelId;
     }
 
     /**
@@ -306,6 +309,12 @@ public:
      * is dependent on the particular integrator implementation. (*)
      */
     int extra;
+
+    /**
+     * Internal flag, which defines the pixel id related to the generated camera path.
+     * For a light path this id is set to -1.
+     */
+    int pixelId;
 };
 
 /** \brief Abstract base class, which describes integrators
