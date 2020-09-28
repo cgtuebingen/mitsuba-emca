@@ -45,7 +45,7 @@ mts_check_configurations (Debug Release MinSizeRel RelWithDebInfo)
 
 
 # Option to enable interprocedural optimizations
-option(MTS_LTCG "Enable interprocedural optimizations on Release targets" ON)
+option(MTS_LTCG "Enable interprocedural optimizations on Release targets" OFF)
 mark_as_advanced (MTS_LTCG)
 
 # Macro to enable interprocedural optimizations on a target

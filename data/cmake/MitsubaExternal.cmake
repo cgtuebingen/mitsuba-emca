@@ -104,9 +104,9 @@ int main (int argc, char **argv) {
 # existence to get a soft failure
 if ((APPLE OR WIN32) AND MTS_DEPENDENCIES)
   set(mts_boost_python_names boost_python boost_python27
-    boost_python32 boost_python33 boost_python)
+    boost_python32 boost_python33 boost_python36 boost_python37 boost_python38 boost_python)
 else()
-  set(mts_boost_python_names boost_python)
+  set(mts_boost_python_names boost_python36 boost_python37 boost_python38 boost_python)
 endif()
 find_library (mts_boost_python_lib NAMES ${mts_boost_python_names}
               HINTS ${Boost_LIBRARY_DIRS} NO_DEFAULT_PATH)
@@ -208,7 +208,6 @@ endif()
 
 
 find_package(OpenGL REQUIRED)
-set (GLEW_MX ON)
 find_package(GLEW REQUIRED)
 if (GLEW_FOUND)
   set (GLEW_STATE_VARS ${GLEW_INCLUDE_DIRS} ${GLEW_LIBRARIES})
@@ -279,13 +278,12 @@ if (MTS_DEPENDENCIES AND NOT PYTHON_INCLUDE_DIR AND
   set(PYTHON_INCLUDE_DIR "${MTS_DEPS_DIR}/include/python27"
       CACHE STRING "Path to the Python include directory.")
 endif()
-find_package (PythonLibs "2.6")
+find_package (Python COMPONENTS Interpreter Development)
 CMAKE_DEPENDENT_OPTION(BUILD_PYTHON "Build the Python bindings." ON
-  "PYTHONLIBS_FOUND;mts_boost_PYTHON_FOUND" OFF)
-if (PYTHONLIBS_FOUND AND mts_boost_PYTHON_FOUND)
+  "PYTHON_FOUND;mts_boost_PYTHON_FOUND" OFF)
+if (PYTHON_FOUND AND mts_boost_PYTHON_FOUND)
   set (PYTHON_FOUND TRUE)
 endif ()
-
 
 # Includes for the common libraries
 include_directories(${Boost_INCLUDE_DIRS} ${Eigen_INCLUDE_DIR})
