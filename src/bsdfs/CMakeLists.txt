@@ -29,6 +29,7 @@ add_bsdf(roughcoating roughcoating.cpp ior.h)
 
 # Other materials
 add_bsdf(ward       ward.cpp)
+add_bsdf(torrance   torrance.cpp)
 add_bsdf(phong      phong.cpp)
 add_bsdf(difftrans  difftrans.cpp)
 add_bsdf(hk         hk.cpp)
