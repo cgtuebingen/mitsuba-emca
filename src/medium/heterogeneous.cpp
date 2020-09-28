@@ -690,6 +690,48 @@ public:
         }
     }
 
+	/// For hetrogenous media: return the absorption coefficient at position p
+	const Spectrum getSigmaA(const Point &p) const{
+		Float density = lookupDensity(p, Vector(0, 0, 1))*m_scale;
+		Spectrum albedo = m_albedo->lookupSpectrum(p);
+		Spectrum sigmaS = albedo*density;
+		Spectrum sigmaA = Spectrum(density) - sigmaS;
+
+		return sigmaA;
+
+	}
+
+	/// For hetrogenous media: return the scattering coefficient at position p
+	const Spectrum getSigmaS(const Point &p) const{
+		Float density = lookupDensity(p, Vector(0, 0, 1))*m_scale;
+		Spectrum albedo = m_albedo->lookupSpectrum(p);
+		Spectrum sigmaS = albedo*density;
+
+		return sigmaS;
+	}
+
+	/// For hetrogenous media: return the extinction coefficient at position p
+	const Spectrum getSigmaT(const Point &p) const{
+		Float density = lookupDensity(p, Vector(0, 0, 1))*m_scale;
+		Spectrum albedo = m_albedo->lookupSpectrum(p);
+		Spectrum sigmaS = albedo*density;
+		Spectrum sigmaA = Spectrum(density) - sigmaS;
+
+		return sigmaS + sigmaA;
+
+	}
+
+	/// For hetrogenous media: return the albedo coefficient at position p
+	const Spectrum getAlbedo(const Point &p) const{
+		Spectrum albedo = m_albedo->lookupSpectrum(p);
+
+		return albedo;
+	}
+
+	const Float getScale() const{
+		return m_scale;
+	}
+
     bool isHomogeneous() const {
         return false;
     }

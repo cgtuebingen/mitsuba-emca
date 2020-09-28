@@ -134,6 +134,15 @@ public:
         return result;
     }
 
+    Float getMeanCosine() const {
+        Float result = 0.0f;
+
+        for (size_t i=0; i<m_phaseFunctions.size(); ++i)
+            result += m_phaseFunctions[i]->getMeanCosine() * m_pdf[i];
+
+        return result;
+	}
+
     Float sample(PhaseFunctionSamplingRecord &pRec, Sampler *sampler) const {
         /* Choose a component based on the normalized weights */
         size_t entry = m_pdf.sample(sampler->next1D());

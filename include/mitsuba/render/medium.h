@@ -154,6 +154,8 @@ public:
     /// Return the phase function of this medium
     inline const PhaseFunction *getPhaseFunction() const { return m_phaseFunction.get(); }
 
+    inline ref<PhaseFunction> getPhaseFunctionRef() { return m_phaseFunction; }
+
     /// Determine whether the medium is homogeneous
     virtual bool isHomogeneous() const = 0;
 
@@ -166,6 +168,25 @@ public:
     /// For homogeneous media: return the extinction coefficient
     inline const Spectrum &getSigmaT() const { return m_sigmaT; }
 
+	/// For homogeneous media: return the albedo coefficient
+	inline  Spectrum getAlbedo() const { return m_sigmaS/(m_sigmaT); }
+
+	/// For hetrogenous media: return the absorption coefficient at position p
+	virtual const Spectrum getSigmaA(const Point &p) const = 0;
+
+	/// For hetrogenous media: return the scattering coefficient at position p
+	virtual const Spectrum getSigmaS(const Point &p) const = 0;
+
+	/// For hetrogenous media: return the extinction coefficient at position p
+	virtual const Spectrum getSigmaT(const Point &p) const = 0;
+
+	/// For hetrogenous media: return the albedo coefficient at position p
+	virtual const Spectrum getAlbedo(const Point &p) const = 0;
+
+	/// For hetrogenous media: return the albedo coefficient at position p
+	virtual const Float getScale() const{
+		return 1.0f;
+	}
     //! @}
     // =============================================================
 

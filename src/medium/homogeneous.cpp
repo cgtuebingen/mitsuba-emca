@@ -399,6 +399,26 @@ public:
         return true;
     }
 
+	/// For hetrogenous media: return the absorption coefficient at position p
+	const Spectrum getSigmaA(const Point &p) const{
+		return m_sigmaA;
+	}
+
+	/// For hetrogenous media: return the scattering coefficient at position p
+	const Spectrum getSigmaS(const Point &p) const{
+		return m_sigmaS;
+	}
+
+	/// For hetrogenous media: return the extinction coefficient at position p
+	const Spectrum getSigmaT(const Point &p) const{
+		return m_sigmaT;
+	}
+
+	/// For hetrogenous media: return the albedo coefficient at position p
+	const Spectrum getAlbedo(const Point &p) const{
+		return m_sigmaS/m_sigmaT;
+	}
+	
     std::string toString() const {
         std::ostringstream oss;
         oss << "HomogeneousMedium[" << endl
