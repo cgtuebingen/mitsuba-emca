@@ -341,7 +341,7 @@ void PreviewThread::run() {
                 }
                 target.buffer = m_renderer->createGPUTexture(formatString("Communication buffer %i", target.id));
                 target.buffer->setComponentFormat(GPUTexture::EFloat32);
-                target.buffer->setPixelFormat(GPUTexture::ERGB);
+                target.buffer->setPixelFormat(GPUTexture::ERGBA);
                 target.buffer->setSize(size);
                 target.buffer->setFilterType(GPUTexture::ENearest);
                 target.buffer->setFrameBufferType(GPUTexture::EColorAndDepthBuffer);
@@ -369,7 +369,7 @@ void PreviewThread::run() {
                     if (m_framebuffer)
                         m_framebuffer->cleanup();
                     m_framebuffer->setComponentFormat(GPUTexture::EFloat32);
-                    m_framebuffer->setPixelFormat(GPUTexture::ERGB);
+                    m_framebuffer->setPixelFormat(GPUTexture::ERGBA);
                     m_framebuffer->setSize(size);
                     m_framebuffer->setFilterType(GPUTexture::ENearest);
                     m_framebuffer->setFrameBufferType(GPUTexture::EColorBuffer);

@@ -117,7 +117,7 @@ int GLProgram::createShader(int type, const std::string &source) {
     int id = glCreateShaderObjectARB(type);
 
     std::ostringstream oss;
-    oss << "#version 120" << endl;
+    oss << "#version 130" << endl;
     for (std::map<std::string, std::string>::const_iterator it = m_definitions.begin();
             it != m_definitions.end(); ++it)
         oss << "#define " << it->first << " " << it->second << endl;
