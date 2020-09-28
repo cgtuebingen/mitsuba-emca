@@ -645,6 +645,7 @@ public:
             << "  worldTransform = " << indent(m_worldTransform.toString()) << "," << endl
             << "  mipmap = " << indent(m_mipmap->toString()) << "," << endl
             << "  medium = " << indent(m_medium.toString()) << endl
+			<< "  scale = " << m_scale << endl
             << "]";
         return oss.str();
     }

@@ -829,6 +829,10 @@ public:
         return result;
     }
 
+    ref<TriMesh> createTriMesh() {
+        return m_meshes[0];
+    }
+
     MTS_DECLARE_CLASS()
 private:
     std::vector<TriMesh *> m_meshes;

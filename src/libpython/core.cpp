@@ -1916,6 +1916,7 @@ void export_core() {
         .def(bp::self /= Float())
         .def(bp::self /= bp::self)
         .def(bp::self / bp::self)
+        .def("getD65", &Spectrum::getD65, BP_RETURN_VALUE)
         .def("isValid", &Spectrum::isValid)
         .def("isNaN", &Spectrum::isNaN)
         .def("average", &Spectrum::average)
