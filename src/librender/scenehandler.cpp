@@ -326,9 +326,9 @@ void SceneHandler::endElement(const XMLCh* const xmlName) {
         case EBoolean: {
                 const std::string &str = context.attributes["value"];
                 bool value;
-                if (str == "true") {
+                if (str == "true" || str == "True") {
                     value = true;
-                } else if (str == "false") {
+                } else if (str == "false" || str == "False") {
                     value = false;
                 } else {
                     XMLLog(EError, "Unsupported boolean constant '%s' -- must be "
