@@ -56,6 +56,10 @@ if 'linux' in sys.platform:
                 install(distDir, ['mtsgui/mtsgui'])
         if hasCollada:
                 install(distDir, ['converter/mtsimport'])
+        # copy over the EMCA libraries
+        # TODO: find an elegant way to set the LD_LIBRARY_PATH for EMCA in setpath.sh
+        if 'EMCALIBDIR' in env:
+            install(distDir, [env['EMCALIBDIR'][0]+'/libemca.so.1'], '')
 if sys.platform == 'win32':
         for plugin in plugins:
                 if '.dll' in plugin.__str__():

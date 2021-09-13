@@ -744,6 +744,17 @@
         </param>
     </plugin>
 
+    <plugin type="integrator" name="field" readableName="Field integrator" show="true" className="FieldIntegrator" extends="SamplingIntegrator">
+        <descr>
+            <p>Field Integrator (see Mitsuba documentation)</p>
+        </descr>
+        <param name="field" readableName="field" type="string" default="">
+            Must be one of the following:
+            position, relPosition, distance, geoNormal, shNormal,
+            primIndex, samplingRates, shapeIndex, transmission, or uv
+        </param>
+    </plugin>
+
     <plugin type="rfilter" readableName="Box filter" name="box" show="true" className="BoxFilter" extends="ReconstructionFilter">
         <descr>Box filter: the fastest, but also about the worst possible
             reconstruction filter, since it is extremely prone to aliasing.
@@ -1014,4 +1025,13 @@
             simply set it to the current frame index.
         </param>
     </plugin>
+
+    <plugin type="sampler" name="deterministic" readableName="Deterministic sampler" show="true" className="DeterministicSampler" extends="Sampler">
+        <descr>
+            <p>The deterministic sampler provides repeatable random values for each pixel and subsample,
+            which are useful for debugging purposes.</p>
+        </descr>
+        <param name="sampleCount" readableName="Samples per pixel" type="integer" default="4">Number of samples per pixel</param>
+    </plugin>
+
 </documentation>

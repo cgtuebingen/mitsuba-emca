@@ -416,6 +416,11 @@ void TriMesh::samplePosition(PositionSamplingRecord &pRec,
 
     Point2 sample(_sample);
     size_t index = m_areaDistr.sampleReuse(sample.y);
+    //FIXME: intentionally broken to visualize a potential implementation bug
+    //size_t index = m_areaDistr.sample(sample.y);
+    //FIXME: side-channel for piping the index to the visualization
+    //pRec.time = index;
+
     pRec.p = m_triangles[index].sample(m_positions, m_normals,
         m_texcoords, pRec.n, pRec.uv, sample);
     pRec.pdf = m_invSurfaceArea;

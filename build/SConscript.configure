@@ -92,6 +92,9 @@ vars.Add('MSVC_VERSION',    'MS Visual C++ compiler version')
 vars.Add('QTDIR',           'Qt installation directory')
 vars.Add('QTINCLUDE',       'Additional Qt include directory')
 vars.Add('INTEL_COMPILER',  'Should the Intel C++ compiler be used?')
+vars.Add('EMCAINCLUDE',     'EMCA include path')
+vars.Add('EMCALIBDIR',      'EMCA library path')
+vars.Add('EMCALIB',         'EMCA libraries')
 
 try:
         env = Environment(options=vars, ENV = os.environ, tools=['default', 'qt5'], toolpath=['#data/scons'])
@@ -123,6 +126,12 @@ if 'OEXRLIBDIR' in env:
         env.Prepend(LIBPATH=env['OEXRLIBDIR'])
 if 'EIGENINCLUDE' in env:
         env.Prepend(CPPPATH=env['EIGENINCLUDE'])
+if 'EMCAINCLUDE' in env:
+        env.Prepend(CPPPATH=env['EMCAINCLUDE'])
+if 'EMCALIBDIR' in env:
+        env.Prepend(LIBPATH=env['EMCALIBDIR'])
+if 'EMCALIB' in env:
+        env.Prepend(LIBS=env['EMCALIB'])
 
 env.Decider('MD5-timestamp')
 
@@ -192,6 +201,12 @@ if not conf.CheckCXXHeader('ImfRgba.h'):
         print('OpenEXR is missing (install libopenexr-dev for OpenEXR I/O support)')
 else:
         env.Append(CPPDEFINES = [['MTS_HAS_OPENEXR', 1]] )
+
+if not conf.CheckCXXHeader('emca/dataapi.h'):
+        print('EMCA is missing (install the EMCA server module)')
+        Exit(1)
+else:
+        env.Append(CPPDEFINES = [['MTS_HAS_EMCA', 1]] )
 
 if not conf.CheckCXXHeader('xercesc/dom/DOMLSParser.hpp'):
         print('Xerces-C++ 3.x must be installed (install libxerces-c-dev)!')

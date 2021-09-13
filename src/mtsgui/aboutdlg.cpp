@@ -74,6 +74,10 @@ AboutDialog::AboutDialog(QWidget *parent) :
     configFlags += "MTS_HAS_OPENEXR ";
 #endif
 
+#if defined(MTS_HAS_EMCA)
+    configFlags += "MTS_HAS_EMCA ";
+#endif
+
 #if defined(MTS_HAS_BREAKPAD)
     configFlags += "MTS_HAS_BREAKPAD ";
 #endif

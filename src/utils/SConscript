@@ -6,5 +6,6 @@ plugins += env.SharedLibrary('cylclip', ['cylclip.cpp'])
 plugins += env.SharedLibrary('kdbench', ['kdbench.cpp'])
 plugins += env.SharedLibrary('tonemap', ['tonemap.cpp'])
 #plugins += env.SharedLibrary('rdielprec', ['rdielprec.cpp'])
+plugins += env.SharedLibrary('emca', ['emca.cpp'])
 
 Export('plugins')

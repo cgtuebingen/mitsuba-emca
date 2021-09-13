@@ -1,22 +1,63 @@
-Mitsuba — Physically Based Renderer
-===================================
+Mitsuba-EMCA
+============
 
-http://mitsuba-renderer.org/
+This repository contains example code for integrating the [EMCA](https://github.com/cgtuebingen/emca) Plugin into [Mitsuba](https://github.com/mitsuba-renderer/mitsuba).
 
-## About
+## Compiling the EMCA Server Library
+Before compiling Mitsuba-EMCA, first compile and install the [EMCA server library](https://github.com/cgtuebingen/emca/tree/public/server).
+If you cannot install the library into the system-wide directories, you can instead install the library into a local prefix
+and adjust the paths `EMCAINCLUDE` and `EMCALIBDIR` in the configuration files in the `build` folder.
 
-Mitsuba is a research-oriented rendering system in the style of PBRT, from which it derives much inspiration. It is written in portable C++, implements unbiased as well as biased techniques, and contains heavy optimizations targeted towards current CPU architectures. Mitsuba is extremely modular: it consists of a small set of core libraries and over 100 different plugins that implement functionality ranging from materials and light sources to complete rendering algorithms.
+## Compiling Mitsuba
+First, make sure that the EMCA Server library is installed.
+For compilation, have a look at the [Mitsuba documentation](http://mitsuba-renderer.org/docs.html).
+If you're running Ubuntu, you can install the remaining required prerequisites using `install_prerequesites_ubuntu.sh`.
 
-In comparison to other open source renderers, Mitsuba places a strong emphasis on experimental rendering techniques, such as path-based formulations of Metropolis Light Transport and volumetric modeling approaches. Thus, it may be of genuine interest to those who would like to experiment with such techniques that haven't yet found their way into mainstream renderers, and it also provides a solid foundation for research in this domain.
+With the prerequisites installed, the code can be compiled on Linux using SCons: (append `-jX` for parallel compilation, e.g. `-j8`)
 
-The renderer currently runs on Linux, MacOS X and Microsoft Windows and makes use of SSE2 optimizations on x86 and x86_64 platforms. So far, its main use has been as a testbed for algorithm development in computer graphics, but there are many other interesting applications.
+    scons --cfg=build/config-linux-gcc.py
 
-Mitsuba comes with a command-line interface as well as a graphical frontend to interactively explore scenes. While navigating, a rough preview is shown that becomes increasingly accurate as soon as all movements are stopped. Once a viewpoint has been chosen, a wide range of rendering techniques can be used to generate images, and their parameters can be tuned from within the program.
+We have merged and extended the patch for Python 3 compatibility, so that recent versions of SCons should work as well.
+Let us know if any changes to the configuration files are necessary for other operating systems.
 
-## Documentation
+We have tested compilation on Ubuntu 20.04.
 
-For compilation, usage, and a full plugin reference, please see the [official documentation](http://mitsuba-renderer.org/docs.html).
+EMCA uses C++17 features (`std::variant`), which may make it a bit more tricky to compile.
+You need a recent version of OpenEXR that compiles with C++17, e.g. version 2.3.0.
+Older versions use [deprecated dynamic exception specifications](https://github.com/AcademySoftwareFoundation/openexr/issues/235) that will not compile.
 
-## Releases and scenes
+### Compiling the GUI
+For compiling the GUI, check the configuration for Qt5 in `data/scons/qt5.py`.
+We have modified it for our systems, where all Qt packages start with a *Qt5* prefix rather than just *Qt*.
+To simplify compilation on modern systems, we have also replaced GLEW-mx with GLEW.
 
-Pre-built binaries, as well as example scenes, are available on the [Mitsuba website](http://mitsuba-renderer.org/download.html).
+## Running Mitsuba-EMCA
+To run Mitsuba-EMCA, you need to use the command-line utility `./dist/mtsutil emca <scene.xml>`.
+Before running the EMCA utility, you need to add the `dist` folder to the `LD_LIBRARY_PATH`.
+Otherwise, loading Mitsuba plugins will fail.
+The simplest way to do this is using the `setpath.sh` script:
+
+    source setpath.sh
+    ./dist/mtsutil emca <scene.xml>
+
+You might additionally need to add the path to the EMCA Server library to the `LD_LIBRARY_PATH`, if not installed to the default location.
+
+## Integration of EMCA into Mitsuba
+All you need to do to add support for EMCA to your path tracer is to add some instrumentation code as explained in the following section.
+
+### Adjusting the Integrator for EMCA
+As an example, there is a copy of the default path tracer `src/integrators/path/path.cpp` at `src/integrators/path/pathemca.cpp` with added instrumentation for collecting the data needed by the EMCA client.
+When using EMCA, make sure that your integrator is instrumented accordingly.
+Otherwise, you will not have access to any path data when using the client.
+
+### Deterministic Path Tracing
+The EMCA utility automatically forces the use of a deterministic sampler, which is implemented in `src/samplers/deterministic.cpp` as a copy of the independent sampler.
+At each pixel, this sampler is seeded based on the pixel location to produce repeatable outcomes.
+The sampler defined in the scene's xml file is only used to determine the sample count.
+
+### Implementation of the EMCA utility
+The EMCA utility is implemented in `src/utils/emca.cpp` and interfaces with the EMCA server library and Mitsuba.
+To support Mitsuba's native types, it provides a specailization of emca::DataApi defined in `include/mitsuba/core/dataapimitsuba.h` and implemented in `src/libcore/dataapimitsuba.cpp`.
+
+## License
+The code is licensed under GNU GPLv3, see LICENSE for details.

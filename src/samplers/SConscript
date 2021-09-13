@@ -7,4 +7,6 @@ plugins += env.SharedLibrary('hammersley', ['hammersley.cpp', 'faure.cpp'])
 plugins += env.SharedLibrary('ldsampler', ['ldsampler.cpp'])
 plugins += env.SharedLibrary('sobol', ['sobol.cpp', 'sobolseq.cpp'])
 
+plugins += env.SharedLibrary('deterministic', ['deterministic.cpp'])
+
 Export('plugins')

@@ -8,6 +8,8 @@ if renderEnv.has_key('XERCESLIBDIR'):
         renderEnv.Prepend(LIBPATH=renderEnv['XERCESLIBDIR'])
 if renderEnv.has_key('XERCESLIB'):
         renderEnv.Prepend(LIBS=renderEnv['XERCESLIB'])
+if renderEnv.has_key('EMCALIB'):
+        renderEnv.Prepend(LIBS=renderEnv['EMCALIB'])
 
 librender = renderEnv.SharedLibrary('mitsuba-render', [
         'bsdf.cpp', 'film.cpp', 'integrator.cpp', 'emitter.cpp', 'sensor.cpp',
@@ -17,7 +19,7 @@ librender = renderEnv.SharedLibrary('mitsuba-render', [
         'shape.cpp', 'trimesh.cpp', 'sampler.cpp', 'util.cpp', 'irrcache.cpp',
         'testcase.cpp', 'photonmap.cpp', 'gatherproc.cpp', 'volume.cpp',
         'vpl.cpp', 'shader.cpp', 'scenehandler.cpp', 'intersection.cpp',
-        'common.cpp', 'phase.cpp', 'noise.cpp', 'photon.cpp'
+        'common.cpp', 'phase.cpp', 'noise.cpp', 'photon.cpp', 'sphericalview.cpp'
 ])
 
 if sys.platform == "darwin":
