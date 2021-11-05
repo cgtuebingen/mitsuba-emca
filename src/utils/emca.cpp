@@ -120,6 +120,8 @@ public:
     }
 
     void renderPixel(uint32_t x, uint32_t y) override {
+        runPreprocess();
+
         ref<Timer> renderPixelTimer = new Timer();
 
         // basic render process copied from render/integrator.cpp
@@ -146,7 +148,7 @@ public:
         Spectrum mcL = Spectrum(0.0);
         // work with provided data API interface for mitsuba
         DataApiMitsuba *dataApiMitsuba = DataApiMitsuba::getInstance();
-        for (int sampleIdx = 0; sampleIdx < sampleCount; sampleIdx++) {
+        for (uint32_t sampleIdx = 0; sampleIdx < sampleCount; sampleIdx++) {
             dataApiMitsuba->setPathIdx(sampleIdx);
             rRec.newQuery(queryType, sensor->getMedium());
             Point2 samplePos(Point2(pixel) + Vector2(rRec.nextSample2D()));
@@ -180,8 +182,8 @@ public:
         return  fileName.string();
     }
 
-    size_t getSampleCount() const override {
-        return m_sampler->getSampleCount();
+    uint32_t getSampleCount() const override {
+        return static_cast<uint32_t>(m_sampler->getSampleCount());
     }
 
     std::string getRenderedImagePath() const override {
@@ -193,18 +195,17 @@ public:
         // get camera settings from rendering system
         const Sensor *sensor = m_scene->getSensor();
         Properties props = sensor->getProperties();
-        float nearClip = props.getFloat("nearClip", 0.1);
+        float nearClip = props.getFloat("nearClip", 0.1f);
         float farClip = props.getFloat("farClip", 100);
-        float focusDist = props.getFloat("focusDistance", 10);
         float fov = props.getFloat("fov", 40);
         Transform t = props.getTransform("toWorld", Transform());
         Matrix4x4 mat = t.getMatrix();
-        emca::Point3f origin = emca::Point3f(mat(0, 3), mat(1, 3), mat(2, 3));
-        emca::Vec3f up = emca::Vec3f(mat(0, 1), mat(1, 1), mat(2, 1));
+        emca::Point3f pos = emca::Point3f(mat(0, 3), mat(1, 3), mat(2, 3));
         emca::Vec3f dir = emca::Vec3f(mat(0, 2), mat(1, 2), mat(2, 2));
+        emca::Vec3f up = emca::Vec3f(mat(0, 1), mat(1, 1), mat(2, 1));
 
         // Initialize and serialize EMCA camera
-        return emca::Camera(nearClip, farClip, focusDist, fov, up, dir, origin);
+        return emca::Camera(pos, dir, up, nearClip, farClip, fov);
     }
 
     std::vector<emca::Mesh> getMeshData() const override {
@@ -233,19 +234,21 @@ public:
             // get triangles indices
             const Triangle *triangles = triMesh->getTriangles();
             //mitsuba uses a compatible point type, no need to convert data one-by-one
-            emcaMesh.triangles.assign(reinterpret_cast<const emca::Vec3i*>(triangles), reinterpret_cast<const emca::Vec3i*>(triangles)+triMesh->getTriangleCount());
+            emcaMesh.triangles.assign(reinterpret_cast<const emca::Vec3u*>(triangles), reinterpret_cast<const emca::Vec3u*>(triangles)+triMesh->getTriangleCount());
+
+            emcaMesh.surfaceArea = triMesh->getSurfaceArea();
 
             // define color of object
             if(shape->isEmitter()) {
                 // FIXME: evaluate the emitter
-                emcaMesh.diffuseColor = emca::Color3f(1, 1, 1);
-                emcaMesh.specularColor = emca::Color3f(0, 0, 0);
+                emcaMesh.diffuseColor = emca::Color4f(1, 1, 1);
+                emcaMesh.specularColor = emca::Color4f(0, 0, 0);
             } else if(shape->isSensor()) {
-                emcaMesh.diffuseColor = emca::Color3f(1, 1, 1);
-                emcaMesh.specularColor = emca::Color3f(0, 0, 0);
+                emcaMesh.diffuseColor = emca::Color4f(1, 1, 1);
+                emcaMesh.specularColor = emca::Color4f(0, 0, 0);
             } else if(shape->isMediumTransition()) {
-                emcaMesh.diffuseColor = emca::Color3f(1, 1, 1);
-                emcaMesh.specularColor = emca::Color3f(1, 1, 1);
+                emcaMesh.diffuseColor = emca::Color4f(1, 1, 1);
+                emcaMesh.specularColor = emca::Color4f(1, 1, 1);
             } else {
                 if(shape->hasBSDF()) {
                     PositionSamplingRecord pRec;
@@ -255,12 +258,12 @@ public:
                     const BSDF* bsdf = shape->getBSDF();
                     Spectrum diffuse = bsdf->getDiffuseReflectance(its);
                     Spectrum specular = bsdf->getSpecularReflectance(its);
-                    emcaMesh.diffuseColor = emca::Color3f(diffuse[0], diffuse[1], diffuse[2]);
-                    emcaMesh.specularColor = emca::Color3f(specular[0], specular[1], specular[2]);
+                    emcaMesh.diffuseColor = emca::Color4f(diffuse[0], diffuse[1], diffuse[2]);
+                    emcaMesh.specularColor = emca::Color4f(specular[0], specular[1], specular[2]);
                 } else {
                     SLog(EWarn, "mesh %s has no associated BSDF", shape->getName().c_str());
-                    emcaMesh.diffuseColor = emca::Color3f(0, 0, 0);
-                    emcaMesh.specularColor = emca::Color3f(0, 0, 0);
+                    emcaMesh.diffuseColor = emca::Color4f(0, 0, 0);
+                    emcaMesh.specularColor = emca::Color4f(0, 0, 0);
                 }
             }
             meshes.emplace_back(std::move(emcaMesh));
@@ -379,7 +382,7 @@ private:
     int m_samplerResID {-1};
     ref<RenderJob> m_renderJob;
 
-    bool m_preprocessed;
+    bool m_preprocessed {false};
 };
 
 class EMCAServer : public Utility {
@@ -397,11 +400,12 @@ public:
 
         DataApiMitsuba* dataApi = DataApiMitsuba::getInstance();
 
-        dataApi->setCamera(mitsuba->getCameraData());
-        dataApi->setMeshData(mitsuba->getMeshData());
         dataApi->plugins.addPlugin(std::move(sphericalView));
 
         mitsuba->runPreprocess();
+
+        // configure the mapping from shape pointers to object ids for heatmap data collection
+        dataApi->configureShapeMapping(mitsuba->getScene()->getShapes());
 
         // Init EMCA server (set pointer in mitsuba namespace to catch the interrupt signal)
         emcaServer = new emca::EMCAServer(mitsuba.get(), dataApi);

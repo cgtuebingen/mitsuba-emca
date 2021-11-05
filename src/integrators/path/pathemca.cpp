@@ -204,6 +204,7 @@ public:
                     const Emitter *emitter = static_cast<const Emitter *>(dRec.object);
                     // nee intersection density
                     //NOTE: need to modify the code in TriMesh::samplePosition() to support this
+                    //the triangle id is passed through via the unused time parameter
                     //emca->addHeatmapData(emitter->getShape(), uint32_t(dRec.time), dRec.p, Spectrum(rRec.depth));
 
                     /* Allocate a record for querying the BSDF */
@@ -382,7 +383,6 @@ public:
         DataApiMitsuba *emca = DataApiMitsuba::getInstance();
 
         // configure the display of heatmap information during preprocessing
-        emca->initHeatmapMitsuba(scene->getShapes());
         emca->heatmap.enable();
         emca->heatmap.label = "intersections / m^2";
         //emca->heatmap.label = "zero-valued BSDF samples / m^2";

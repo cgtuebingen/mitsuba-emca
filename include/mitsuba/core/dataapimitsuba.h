@@ -45,9 +45,13 @@ public:
 
     // support for Mitsuba Spectrum
     void addIntersectionData(const std::string& s, const mitsuba::Spectrum& c) {
-        //FIXME: colors are transferred as 4 floats
-        emca::DataApi::addIntersectionData(s, static_cast<float>(c[0]), static_cast<float>(c[1]), static_cast<float>(c[2]), 0.0f);
+        emca::DataApi::addIntersectionData(s, static_cast<float>(c[0]), static_cast<float>(c[1]), static_cast<float>(c[2]), 1.0f);
     }
+
+    /*
+    // silence clang warning
+    void addIntersectionData(const std::string&s, const float f);
+    */
 
     // provide the generic interface
     using emca::DataApi::addPathData;
@@ -66,8 +70,7 @@ public:
 
     // support for Mitsuba Spectrum
     void addPathData(const std::string& s, const mitsuba::Spectrum& c) {
-        //FIXME: colors are transferred as 4 floats
-        emca::DataApi::addPathData(s, static_cast<float>(c[0]), static_cast<float>(c[1]), static_cast<float>(c[2]), 0.0f);
+        emca::DataApi::addPathData(s, static_cast<float>(c[0]), static_cast<float>(c[1]), static_cast<float>(c[2]), 1.0f);
     }
 
     /**
@@ -77,14 +80,7 @@ public:
      * @param value     value to record at the location
      */
     void addHeatmapData(const Shape *shape, uint32_t primIndex, const Point3f& p, const Spectrum& value, float weight=1.0f);
-
-    /**
-     * @brief initHeatmapData initializes the data structures necessary to record 3D heatmap data
-     * @param shapes list of shapes
-     * @param subdivision_budget controls the fixed memory usage by the heatmap data
-     *        TODO: compute how many bytes per subdivision face are needed - then one could set a memory budget instead
-     */
-    void initHeatmapMitsuba(const ref_vector<Shape>& shapes, uint32_t subdivision_budget=(1<<23));
+    void configureShapeMapping(const ref_vector<Shape>& shapes);
 
 private:
     DataApiMitsuba() = default;
