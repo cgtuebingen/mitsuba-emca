@@ -40,7 +40,11 @@ The simplest way to do this is using the `setpath.sh` script:
     source setpath.sh
     ./dist/mtsutil emca <scene.xml>
 
-You might additionally need to add the path to the EMCA Server library to the `LD_LIBRARY_PATH`, if not installed to the default location.
+You might additionally need to add the path to the EMCA Server library to the `LD_LIBRARY_PATH`, if it is not installed to the default location.
+
+Make sure that your `scene.xml` is configured to use an integrator that is instrumented to collect data using the EMCA API.
+Unless you add your own, only the integrator `pathemca` collects this information.
+In the scene file, adjust `<integrator type="path"/>` to `<integrator type="pathemca"/>`.
 
 ## Integration of EMCA into Mitsuba
 All you need to do to add support for EMCA to your path tracer is to add some instrumentation code as explained in the following section.
